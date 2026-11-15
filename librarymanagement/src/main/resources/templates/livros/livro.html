@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Livro</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+  <header class="topo">
+    <div>
+      <h1 th:text="${livro.id == null ? 'Cadastrar Novo Livro' : 'Editar Livro'}">Formulário de Livro</h1>
+      <p class="subtitulo">Preencha os dados da obra abaixo</p>
+    </div>
+    <a th:href="@{/livros}" class="btn btn-secondary">← Voltar</a>
+  </header>
+
+  <div class="card form-card">
+    <form th:action="@{/livros/salvar}" th:object="${livro}" method="post">
+      <input type="hidden" th:field="*{id}" />
+
+      <div class="form-group">
+        <label for="titulo">Título do Livro</label>
+        <input type="text" id="titulo" th:field="*{titulo}" placeholder="Ex: O Pequeno Príncipe" required />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="isbn">ISBN</label>
+          <input type="text" id="isbn" th:field="*{isbn}" placeholder="Ex: 978-8595081512" required />
+        </div>
+
+        <div class="form-group">
+          <label for="anoPublicacao">Ano de Publicação</label>
+          <input type="number" id="anoPublicacao" th:field="*{anoPublicacao}" placeholder="Ex: 2020" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="autor">Autor</label>
+          <select id="autor" th:field="*{autor.id}">
+            <option value="">-- Selecione um Autor --</option>
+            <option th:each="autor : ${autores}"
+                    th:value="${autor.id}"
+                    th:text="${autor.nome}">
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="categoria">Categoria</label>
+          <select id="categoria" th:field="*{categoria.id}">
+            <option value="">-- Selecione uma Categoria --</option>
+            <option th:each="cat : ${categorias}"
+                    th:value="${cat.id}"
+                    th:text="${cat.nome}">
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" th:field="*{disponivel}" />
+          Livro disponível para empréstimo
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Salvar Livro</button>
+        <a th:href="@{/livros}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>

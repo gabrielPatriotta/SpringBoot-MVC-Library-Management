@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biblioteca MVC - Livros</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+  <header class="topo">
+    <div>
+      <h1>Gerenciamento de Biblioteca</h1>
+      <p class="subtitulo">Acervo de Livros Cadastrados</p>
+    </div>
+    <a th:href="@{/livros/novo}" class="btn btn-primary">+ Novo Livro</a>
+  </header>
+
+  <div class="card">
+    <table>
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Título</th>
+        <th>ISBN</th>
+        <th>Ano</th>
+        <th>Autor</th>
+        <th>Categoria</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:if="${#lists.isEmpty(livros)}">
+        <td colspan="8" class="vazio">Nenhum livro cadastrado no momento.</td>
+      </tr>
+      <tr th:each="livro : ${livros}">
+        <td th:text="${livro.id}">1</td>
+        <td th:text="${livro.titulo}">Título do Livro</td>
+        <td th:text="${livro.isbn}">000-0000000000</td>
+        <td th:text="${livro.anoPublicacao}">2024</td>
+        <td th:text="${livro.autor != null ? livro.autor.nome : 'Sem autor'}">Autor</td>
+        <td th:text="${livro.categoria != null ? livro.categoria.nome : 'Sem categoria'}">Categoria</td>
+        <td>
+          <span th:if="${livro.disponivel}" class="badge badge-disponivel">Disponível</span>
+          <span th:unless="${livro.disponivel}" class="badge badge-emprestado">Emprestado</span>
+        </td>
+        <td class="acoes">
+          <a th:href="@{/livros/editar/{id}(id=${livro.id})}" class="btn btn-edit">Editar</a>
+          <a th:href="@{/livros/excluir/{id}(id=${livro.id})}"
+             class="btn btn-delete"
+             onclick="return confirm('Tem certeza que deseja excluir este livro?');">Excluir</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>
