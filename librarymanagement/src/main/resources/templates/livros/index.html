@@ -3,18 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Biblioteca MVC - Livros</title>
+  <title>BiblioTech — Acervo de Livros</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<div class="container">
-  <header class="topo">
+
+<nav class="navbar">
+  <div class="nav-container">
+    <a th:href="@{/livros}" class="brand">
+      <span class="brand-icon">📚</span>
+      <span>Biblio<strong>Tech</strong></span>
+    </a>
+    <div class="nav-links">
+      <a th:href="@{/livros}" class="nav-item active">Livros</a>
+      <a th:href="@{/autores}" class="nav-item">Autores</a>
+    </div>
+  </div>
+</nav>
+
+<main class="container">
+  <header class="page-header">
     <div>
-      <h1>Gerenciamento de Biblioteca</h1>
-      <p class="subtitulo">Acervo de Livros Cadastrados</p>
+      <h1>Acervo de Livros</h1>
+      <p class="subtitle">Controle completo de títulos, autores e disponibilidade</p>
     </div>
     <a th:href="@{/livros/novo}" class="btn btn-primary">+ Novo Livro</a>
   </header>
+
+  <section class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-label">Total de Obras</span>
+      <strong class="stat-value" th:text="${#lists.size(livros)}">0</strong>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Disponíveis Agora</span>
+      <strong class="stat-value text-success" th:text="${#lists.size(livros.?[disponivel == true])}">0</strong>
+    </div>
+  </section>
 
   <div class="card">
     <table>
@@ -27,34 +54,38 @@
         <th>Autor</th>
         <th>Categoria</th>
         <th>Status</th>
-        <th>Ações</th>
+        <th class="text-right">Ações</th>
       </tr>
       </thead>
       <tbody>
       <tr th:if="${#lists.isEmpty(livros)}">
-        <td colspan="8" class="vazio">Nenhum livro cadastrado no momento.</td>
+        <td colspan="8" class="empty-state">Nenhum livro cadastrado no momento.</td>
       </tr>
       <tr th:each="livro : ${livros}">
-        <td th:text="${livro.id}">1</td>
-        <td th:text="${livro.titulo}">Título do Livro</td>
-        <td th:text="${livro.isbn}">000-0000000000</td>
+        <td class="id-col" th:text="'#' + ${livro.id}">#1</td>
+        <td class="fw-600" th:text="${livro.titulo}">Título do Livro</td>
+        <td class="mono" th:text="${livro.isbn}">000-0000000000</td>
         <td th:text="${livro.anoPublicacao}">2024</td>
-        <td th:text="${livro.autor != null ? livro.autor.nome : 'Sem autor'}">Autor</td>
-        <td th:text="${livro.categoria != null ? livro.categoria.nome : 'Sem categoria'}">Categoria</td>
+        <td th:text="${livro.autor != null ? livro.autor.nome : '—'}">Autor</td>
         <td>
-          <span th:if="${livro.disponivel}" class="badge badge-disponivel">Disponível</span>
-          <span th:unless="${livro.disponivel}" class="badge badge-emprestado">Emprestado</span>
+                    <span class="badge badge-neutral"
+                          th:text="${livro.categoria != null ? livro.categoria.nome : 'Sem categoria'}">Categoria</span>
         </td>
-        <td class="acoes">
-          <a th:href="@{/livros/editar/{id}(id=${livro.id})}" class="btn btn-edit">Editar</a>
+        <td>
+          <span th:if="${livro.disponivel}" class="badge badge-success">● Disponível</span>
+          <span th:unless="${livro.disponivel}" class="badge badge-danger">● Emprestado</span>
+        </td>
+        <td class="actions text-right">
+          <a th:href="@{/livros/editar/{id}(id=${livro.id})}" class="btn btn-sm btn-edit">Editar</a>
           <a th:href="@{/livros/excluir/{id}(id=${livro.id})}"
-             class="btn btn-delete"
+             class="btn btn-sm btn-delete"
              onclick="return confirm('Tem certeza que deseja excluir este livro?');">Excluir</a>
         </td>
       </tr>
       </tbody>
     </table>
   </div>
-</div>
+</main>
+
 </body>
 </html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BiblioTech — Autores</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-container">
+    <a th:href="@{/livros}" class="brand">
+      <span class="brand-icon">📚</span>
+      <span>Biblio<strong>Tech</strong></span>
+    </a>
+    <div class="nav-links">
+      <a th:href="@{/livros}" class="nav-item">Livros</a>
+      <a th:href="@{/autores}" class="nav-item active">Autores</a>
+    </div>
+  </div>
+</nav>
+
+<main class="container">
+  <header class="page-header">
+    <div>
+      <h1>Autores Cadastrados</h1>
+      <p class="subtitle">Gerencie os escritores vinculados ao acervo da biblioteca</p>
+    </div>
+    <a th:href="@{/autores/novo}" class="btn btn-primary">+ Novo Autor</a>
+  </header>
+
+  <section class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-label">Total de Autores</span>
+      <strong class="stat-value" th:text="${#lists.size(autores)}">0</strong>
+    </div>
+  </section>
+
+  <div class="card">
+    <table>
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome do Autor</th>
+        <th>Nacionalidade</th>
+        <th class="text-right">Ações</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:if="${#lists.isEmpty(autores)}">
+        <td colspan="4" class="empty-state">Nenhum autor cadastrado ainda. Clique em "+ Novo Autor" para começar.</td>
+      </tr>
+      <tr th:each="autor : ${autores}">
+        <td class="id-col" th:text="'#' + ${autor.id}">#1</td>
+        <td class="fw-600" th:text="${autor.nome}">Machado de Assis</td>
+        <td>
+          <span class="badge badge-neutral" th:text="${autor.nacionalidade}">Brasileira</span>
+        </td>
+        <td class="actions text-right">
+          <a th:href="@{/autores/editar/{id}(id=${autor.id})}" class="btn btn-sm btn-edit">Editar</a>
+          <a th:href="@{/autores/excluir/{id}(id=${autor.id})}"
+             class="btn btn-sm btn-delete"
+             onclick="return confirm('Deseja excluir este autor?');">Excluir</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+</body>
+</html>
