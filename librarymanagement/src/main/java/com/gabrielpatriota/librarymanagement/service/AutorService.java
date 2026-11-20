@@ -2,7 +2,9 @@ package com.gabrielpatriota.librarymanagement.service;
 
 import com.gabrielpatriota.librarymanagement.model.Autor;
 import com.gabrielpatriota.librarymanagement.repository.AutorRepository;
+import com.gabrielpatriota.librarymanagement.repository.LivroRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -10,9 +12,11 @@ import java.util.List;
 public class AutorService {
 
     private final AutorRepository autorRepository;
+    private final LivroRepository livroRepository;
 
-    public AutorService(AutorRepository autorRepository) {
+    public AutorService(AutorRepository autorRepository, LivroRepository livroRepository) {
         this.autorRepository = autorRepository;
+        this.livroRepository = livroRepository;
     }
 
     public List<Autor> listarTodos() {
@@ -23,11 +27,17 @@ public class AutorService {
         return autorRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public Autor salvar(Autor autor) {
         return autorRepository.save(autor);
     }
 
-    public void excluir(Long id) {
+    @Transactional
+    public boolean excluir(Long id) {
+        if (!autorRepository.existsById(id) || livroRepository.existsByAutor_Id(id)) {
+            return false;
+        }
         autorRepository.deleteById(id);
+        return true;
     }
 }

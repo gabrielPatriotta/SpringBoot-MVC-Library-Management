@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BiblioTech — Novo Empréstimo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" th:href="@{/css/crud-additions.css}">
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-container">
+    <a th:href="@{/livros}" class="brand"><span class="brand-icon">📚</span><span>Biblio<strong>Tech</strong></span></a>
+    <div class="nav-links">
+      <a th:href="@{/livros}" class="nav-item ">Livros</a>
+      <a th:href="@{/autores}" class="nav-item ">Autores</a>
+      <a th:href="@{/categorias}" class="nav-item ">Categorias</a>
+      <a th:href="@{/usuarios}" class="nav-item ">Usuários</a>
+      <a th:href="@{/emprestimos}" class="nav-item active">Empréstimos</a>
+    </div>
+  </div>
+</nav>
+<main class="container">
+  <div th:if="${mensagem}" class="notice notice-success" th:text="${mensagem}"></div>
+  <div th:if="${erro}" class="notice notice-error" th:text="${erro}"></div>
+
+  <header class="page-header"><div><h1>Novo Empréstimo</h1><p class="subtitle">Selecione um livro disponível e o usuário que realizará o empréstimo</p></div><a th:href="@{/emprestimos}" class="btn btn-secondary">Voltar para Empréstimos</a></header>
+  <div th:if="${#lists.isEmpty(livros)}" class="notice notice-error">Não há livros disponíveis para empréstimo. Cadastre um livro ou registre uma devolução primeiro.</div>
+  <div th:if="${#lists.isEmpty(usuarios)}" class="notice notice-error">Não há usuários cadastrados. Cadastre um usuário antes de registrar um empréstimo.</div>
+  <div class="card form-card"><form th:action="@{/emprestimos/salvar}" method="post">
+    <div class="form-group"><label for="livroId">Livro disponível</label><select id="livroId" name="livroId" required><option value="">-- Selecione um livro --</option><option th:each="livro : ${livros}" th:value="${livro.id}" th:text="${livro.titulo + ' — ' + livro.isbn}"></option></select></div>
+    <div class="form-group"><label for="usuarioId">Usuário</label><select id="usuarioId" name="usuarioId" required><option value="">-- Selecione um usuário --</option><option th:each="usuario : ${usuarios}" th:value="${usuario.id}" th:text="${usuario.nome + ' (' + usuario.matricula + ')'}"></option></select></div>
+    <p class="subtitle">A data do empréstimo será registrada automaticamente. A data da devolução será preenchida quando a devolução for confirmada.</p>
+    <div class="form-actions"><button type="submit" class="btn btn-primary" th:disabled="${#lists.isEmpty(livros) or #lists.isEmpty(usuarios)}">Registrar Empréstimo</button><a th:href="@{/emprestimos}" class="btn btn-secondary">Cancelar</a></div>
+  </form></div>
+
+</main>
+</body>
+</html>

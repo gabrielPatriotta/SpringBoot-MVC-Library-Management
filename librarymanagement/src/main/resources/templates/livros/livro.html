@@ -3,94 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BiblioTech — Formulário de Livro</title>
+  <title>BiblioTech — Cadastro de Usuário</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" th:href="@{/css/crud-additions.css}">
 </head>
 <body>
-
 <nav class="navbar">
   <div class="nav-container">
-    <a th:href="@{/livros}" class="brand">
-      <span class="brand-icon">📚</span>
-      <span>Biblio<strong>Tech</strong></span>
-    </a>
+    <a th:href="@{/livros}" class="brand"><span class="brand-icon">📚</span><span>Biblio<strong>Tech</strong></span></a>
     <div class="nav-links">
-      <a th:href="@{/livros}" class="nav-item active">Livros</a>
-      <a th:href="@{/autores}" class="nav-item">Autores</a>
+      <a th:href="@{/livros}" class="nav-item ">Livros</a>
+      <a th:href="@{/autores}" class="nav-item ">Autores</a>
+      <a th:href="@{/categorias}" class="nav-item ">Categorias</a>
+      <a th:href="@{/usuarios}" class="nav-item active">Usuários</a>
+      <a th:href="@{/emprestimos}" class="nav-item ">Empréstimos</a>
     </div>
   </div>
 </nav>
-
 <main class="container">
-  <header class="page-header">
-    <div>
-      <h1 th:text="${livro.id == null ? 'Cadastrar Novo Livro' : 'Editar Livro'}">Formulário de Livro</h1>
-      <p class="subtitle">Preencha os detalhes da obra para registrar no catálogo</p>
-    </div>
-    <a th:href="@{/livros}" class="btn btn-secondary">← Voltar para Acervo</a>
-  </header>
+  <div th:if="${mensagem}" class="notice notice-success" th:text="${mensagem}"></div>
+  <div th:if="${erro}" class="notice notice-error" th:text="${erro}"></div>
 
-  <div class="card form-card">
-    <form th:action="@{/livros/salvar}" th:object="${livro}" method="post">
-      <input type="hidden" th:field="*{id}" />
+  <header class="page-header"><div><h1 th:text="${usuario.id == null ? 'Cadastrar Usuário' : 'Editar Usuário'}">Usuário</h1><p class="subtitle">Informe os dados do usuário da biblioteca</p></div><a th:href="@{/usuarios}" class="btn btn-secondary">Voltar para Lista</a></header>
+  <div class="card form-card"><form th:action="@{/usuarios/salvar}" th:object="${usuario}" method="post">
+    <input type="hidden" th:field="*{id}">
+    <div class="form-group"><label for="nome">Nome completo</label><input id="nome" type="text" th:field="*{nome}" placeholder="Nome do usuário" maxlength="150" required></div>
+    <div class="form-group"><label for="email">E-mail</label><input id="email" type="email" th:field="*{email}" placeholder="usuario@exemplo.com" maxlength="150" required></div>
+    <div class="form-group"><label for="matricula">Matrícula</label><input id="matricula" type="text" th:field="*{matricula}" placeholder="Número de matrícula" maxlength="50" required></div>
+    <div class="form-actions"><button type="submit" class="btn btn-primary">Salvar Usuário</button><a th:href="@{/usuarios}" class="btn btn-secondary">Cancelar</a></div>
+  </form></div>
 
-      <div class="form-group">
-        <label for="titulo">Título da Obra</label>
-        <input type="text" id="titulo" th:field="*{titulo}" placeholder="Ex: 1984" required />
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="isbn">Código ISBN</label>
-          <input type="text" id="isbn" th:field="*{isbn}" placeholder="Ex: 978-8535914849" required />
-        </div>
-
-        <div class="form-group">
-          <label for="anoPublicacao">Ano de Publicação</label>
-          <input type="number" id="anoPublicacao" th:field="*{anoPublicacao}" placeholder="Ex: 1949" required />
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="autor">Autor <a th:href="@{/autores/novo}" class="inline-link">(+ Cadastrar novo)</a></label>
-          <select id="autor" th:field="*{autor.id}">
-            <option value="">-- Selecione um Autor --</option>
-            <option th:each="autor : ${autores}"
-                    th:value="${autor.id}"
-                    th:text="${autor.nome}">
-            </option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="categoria">Categoria</label>
-          <select id="categoria" th:field="*{categoria.id}">
-            <option value="">-- Selecione uma Categoria --</option>
-            <option th:each="cat : ${categorias}"
-                    th:value="${cat.id}"
-                    th:text="${cat.nome}">
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-group checkbox-card">
-        <label>
-          <input type="checkbox" th:field="*{disponivel}" />
-          <span>Disponível para empréstimo imediato</span>
-        </label>
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Salvar Obra</button>
-        <a th:href="@{/livros}" class="btn btn-secondary">Cancelar</a>
-      </div>
-    </form>
-  </div>
 </main>
-
 </body>
 </html>

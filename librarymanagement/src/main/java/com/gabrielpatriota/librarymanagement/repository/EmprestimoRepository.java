@@ -8,5 +8,12 @@ import java.util.List;
 
 @Repository
 public interface EmprestimoRepository extends JpaRepository<Emprestimo, Long> {
+
     List<Emprestimo> findByDevolvidoFalse();
+
+    boolean existsByLivro_Id(Long livroId);
+
+    boolean existsByLivro_IdAndDevolvidoFalse(Long livroId);
+
+    boolean existsByUsuario_Id(Long usuarioId);
 }

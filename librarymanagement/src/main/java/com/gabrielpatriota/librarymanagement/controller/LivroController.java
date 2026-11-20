@@ -7,6 +7,9 @@ import com.gabrielpatriota.librarymanagement.service.LivroService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.ArrayList;
 
 @Controller
 public class LivroController {
@@ -15,7 +18,9 @@ public class LivroController {
     private final AutorService autorService;
     private final CategoriaService categoriaService;
 
-    public LivroController(LivroService livroService, AutorService autorService, CategoriaService categoriaService) {
+    public LivroController(LivroService livroService,
+                           AutorService autorService,
+                           CategoriaService categoriaService) {
         this.livroService = livroService;
         this.autorService = autorService;
         this.categoriaService = categoriaService;
@@ -23,33 +28,29 @@ public class LivroController {
 
     @GetMapping({"/", "/livros"})
     public String listarLivros(Model model) {
-        model.addAttribute("livros", livroService.listarTodos());
+        ArrayList<Livro> livros = new ArrayList<>(livroService.listarTodos());
+        model.addAttribute("livros", livros);
         return "livros/index";
     }
 
     @GetMapping("/livros/novo")
     public String novoLivroForm(Model model) {
         model.addAttribute("livro", new Livro());
-        model.addAttribute("autores", autorService.listarTodos());
-        model.addAttribute("categorias", categoriaService.listarTodas());
+        carregarOpcoesDoFormulario(model);
         return "livros/livro";
     }
 
     @PostMapping("/livros/salvar")
-    public String salvarLivro(@ModelAttribute Livro livro) {
-        if (livro.getAutor() != null && livro.getAutor().getId() != null) {
-            livro.setAutor(autorService.buscarPorId(livro.getAutor().getId()));
-        } else {
-            livro.setAutor(null);
+    public String salvarLivro(@ModelAttribute Livro livro,
+                              RedirectAttributes redirectAttributes) {
+        Livro salvo = livroService.salvar(livro);
+        if (salvo == null) {
+            redirectAttributes.addFlashAttribute(
+                    "erro", "Não foi possível salvar o livro. Confira os dados e selecione um autor e uma categoria válidos."
+            );
+            return "redirect:/livros/novo";
         }
-
-        if (livro.getCategoria() != null && livro.getCategoria().getId() != null) {
-            livro.setCategoria(categoriaService.buscarPorId(livro.getCategoria().getId()));
-        } else {
-            livro.setCategoria(null);
-        }
-
-        livroService.salvar(livro);
+        redirectAttributes.addFlashAttribute("mensagem", "Livro salvo com sucesso.");
         return "redirect:/livros";
     }
 
@@ -60,14 +61,26 @@ public class LivroController {
             return "redirect:/livros";
         }
         model.addAttribute("livro", livro);
-        model.addAttribute("autores", autorService.listarTodos());
-        model.addAttribute("categorias", categoriaService.listarTodas());
+        carregarOpcoesDoFormulario(model);
         return "livros/livro";
     }
 
-    @GetMapping("/livros/excluir/{id}")
-    public String excluirLivro(@PathVariable Long id) {
-        livroService.excluir(id);
+    @PostMapping("/livros/excluir/{id}")
+    public String excluirLivro(@PathVariable Long id,
+                               RedirectAttributes redirectAttributes) {
+        boolean excluido = livroService.excluir(id);
+        if (excluido) {
+            redirectAttributes.addFlashAttribute("mensagem", "Livro excluído com sucesso.");
+        } else {
+            redirectAttributes.addFlashAttribute(
+                    "erro", "Não foi possível excluir o livro. Ele pode estar vinculado a um empréstimo."
+            );
+        }
         return "redirect:/livros";
+    }
+
+    private void carregarOpcoesDoFormulario(Model model) {
+        model.addAttribute("autores", new ArrayList<>(autorService.listarTodos()));
+        model.addAttribute("categorias", new ArrayList<>(categoriaService.listarTodas()));
     }
 }
