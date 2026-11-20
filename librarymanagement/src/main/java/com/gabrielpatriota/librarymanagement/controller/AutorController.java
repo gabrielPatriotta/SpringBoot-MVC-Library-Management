@@ -5,6 +5,9 @@ import com.gabrielpatriota.librarymanagement.service.AutorService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.ArrayList;
 
 @Controller
 @RequestMapping("/autores")
@@ -18,7 +21,8 @@ public class AutorController {
 
     @GetMapping
     public String listarAutores(Model model) {
-        model.addAttribute("autores", autorService.listarTodos());
+        ArrayList<Autor> autores = new ArrayList<>(autorService.listarTodos());
+        model.addAttribute("autores", autores);
         return "autores/index";
     }
 
@@ -29,8 +33,10 @@ public class AutorController {
     }
 
     @PostMapping("/salvar")
-    public String salvarAutor(@ModelAttribute Autor autor) {
+    public String salvarAutor(@ModelAttribute Autor autor,
+                              RedirectAttributes redirectAttributes) {
         autorService.salvar(autor);
+        redirectAttributes.addFlashAttribute("mensagem", "Autor salvo com sucesso.");
         return "redirect:/autores";
     }
 
@@ -44,9 +50,17 @@ public class AutorController {
         return "autores/autor";
     }
 
-    @GetMapping("/excluir/{id}")
-    public String excluirAutor(@PathVariable Long id) {
-        autorService.excluir(id);
+    @PostMapping("/excluir/{id}")
+    public String excluirAutor(@PathVariable Long id,
+                               RedirectAttributes redirectAttributes) {
+        boolean excluido = autorService.excluir(id);
+        if (excluido) {
+            redirectAttributes.addFlashAttribute("mensagem", "Autor excluído com sucesso.");
+        } else {
+            redirectAttributes.addFlashAttribute(
+                    "erro", "Não foi possível excluir o autor. Verifique se ele está vinculado a algum livro."
+            );
+        }
         return "redirect:/autores";
     }
 }

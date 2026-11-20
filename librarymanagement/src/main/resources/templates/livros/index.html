@@ -7,85 +7,51 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" th:href="@{/css/crud-additions.css}">
 </head>
 <body>
-
 <nav class="navbar">
   <div class="nav-container">
-    <a th:href="@{/livros}" class="brand">
-      <span class="brand-icon">📚</span>
-      <span>Biblio<strong>Tech</strong></span>
-    </a>
+    <a th:href="@{/livros}" class="brand"><span class="brand-icon">📚</span><span>Biblio<strong>Tech</strong></span></a>
     <div class="nav-links">
       <a th:href="@{/livros}" class="nav-item active">Livros</a>
-      <a th:href="@{/autores}" class="nav-item">Autores</a>
+      <a th:href="@{/autores}" class="nav-item ">Autores</a>
+      <a th:href="@{/categorias}" class="nav-item ">Categorias</a>
+      <a th:href="@{/usuarios}" class="nav-item ">Usuários</a>
+      <a th:href="@{/emprestimos}" class="nav-item ">Empréstimos</a>
     </div>
   </div>
 </nav>
-
 <main class="container">
+  <div th:if="${mensagem}" class="notice notice-success" th:text="${mensagem}"></div>
+  <div th:if="${erro}" class="notice notice-error" th:text="${erro}"></div>
+
   <header class="page-header">
-    <div>
-      <h1>Acervo de Livros</h1>
-      <p class="subtitle">Controle completo de títulos, autores e disponibilidade</p>
-    </div>
+    <div><h1>Acervo de Livros</h1><p class="subtitle">Controle de títulos, autores, categorias e disponibilidade</p></div>
     <a th:href="@{/livros/novo}" class="btn btn-primary">+ Novo Livro</a>
   </header>
-
   <section class="stats-grid">
-    <div class="stat-card">
-      <span class="stat-label">Total de Obras</span>
-      <strong class="stat-value" th:text="${#lists.size(livros)}">0</strong>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">Disponíveis Agora</span>
-      <strong class="stat-value text-success" th:text="${#lists.size(livros.?[disponivel == true])}">0</strong>
-    </div>
+    <div class="stat-card"><span class="stat-label">Total de Obras</span><strong class="stat-value" th:text="${#lists.size(livros)}">0</strong></div>
+    <div class="stat-card"><span class="stat-label">Disponíveis Agora</span><strong class="stat-value text-success" th:text="${#lists.size(livros.?[disponivel == true])}">0</strong></div>
   </section>
+  <div class="card"><table>
+    <thead><tr><th>ID</th><th>Título</th><th>ISBN</th><th>Ano</th><th>Autor</th><th>Categoria</th><th>Status</th><th class="text-right">Ações</th></tr></thead>
+    <tbody>
+    <tr th:if="${#lists.isEmpty(livros)}"><td colspan="8" class="empty-state">Nenhum livro cadastrado no momento.</td></tr>
+    <tr th:each="livro : ${livros}">
+      <td class="id-col" th:text="|#${livro.id}|">#1</td><td class="fw-600" th:text="${livro.titulo}">Título</td>
+      <td class="mono" th:text="${livro.isbn}">ISBN</td><td th:text="${livro.anoPublicacao}">2024</td>
+      <td th:text="${livro.autor != null ? livro.autor.nome : '—'}">Autor</td>
+      <td><span class="badge badge-neutral" th:text="${livro.categoria != null ? livro.categoria.nome : 'Sem categoria'}">Categoria</span></td>
+      <td><span th:if="${livro.disponivel}" class="badge badge-success">Disponível</span><span th:unless="${livro.disponivel}" class="badge badge-danger">Emprestado</span></td>
+      <td><div class="actions">
+        <a th:href="@{/livros/editar/{id}(id=${livro.id})}" class="btn btn-sm btn-edit">Editar</a>
+        <form th:action="@{/livros/excluir/{id}(id=${livro.id})}" method="post" onsubmit="return confirm('Tem certeza que deseja excluir este livro?');"><button type="submit" class="btn btn-sm btn-delete">Excluir</button></form>
+      </div></td>
+    </tr>
+    </tbody>
+  </table></div>
 
-  <div class="card">
-    <table>
-      <thead>
-      <tr>
-        <th>ID</th>
-        <th>Título</th>
-        <th>ISBN</th>
-        <th>Ano</th>
-        <th>Autor</th>
-        <th>Categoria</th>
-        <th>Status</th>
-        <th class="text-right">Ações</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:if="${#lists.isEmpty(livros)}">
-        <td colspan="8" class="empty-state">Nenhum livro cadastrado no momento.</td>
-      </tr>
-      <tr th:each="livro : ${livros}">
-        <td class="id-col" th:text="'#' + ${livro.id}">#1</td>
-        <td class="fw-600" th:text="${livro.titulo}">Título do Livro</td>
-        <td class="mono" th:text="${livro.isbn}">000-0000000000</td>
-        <td th:text="${livro.anoPublicacao}">2024</td>
-        <td th:text="${livro.autor != null ? livro.autor.nome : '—'}">Autor</td>
-        <td>
-                    <span class="badge badge-neutral"
-                          th:text="${livro.categoria != null ? livro.categoria.nome : 'Sem categoria'}">Categoria</span>
-        </td>
-        <td>
-          <span th:if="${livro.disponivel}" class="badge badge-success">● Disponível</span>
-          <span th:unless="${livro.disponivel}" class="badge badge-danger">● Emprestado</span>
-        </td>
-        <td class="actions text-right">
-          <a th:href="@{/livros/editar/{id}(id=${livro.id})}" class="btn btn-sm btn-edit">Editar</a>
-          <a th:href="@{/livros/excluir/{id}(id=${livro.id})}"
-             class="btn btn-sm btn-delete"
-             onclick="return confirm('Tem certeza que deseja excluir este livro?');">Excluir</a>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
 </main>
-
 </body>
 </html>

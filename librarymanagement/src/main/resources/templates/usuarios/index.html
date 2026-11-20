@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BiblioTech — Usuários</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" th:href="@{/css/crud-additions.css}">
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-container">
+    <a th:href="@{/livros}" class="brand"><span class="brand-icon">📚</span><span>Biblio<strong>Tech</strong></span></a>
+    <div class="nav-links">
+      <a th:href="@{/livros}" class="nav-item ">Livros</a>
+      <a th:href="@{/autores}" class="nav-item ">Autores</a>
+      <a th:href="@{/categorias}" class="nav-item ">Categorias</a>
+      <a th:href="@{/usuarios}" class="nav-item active">Usuários</a>
+      <a th:href="@{/emprestimos}" class="nav-item ">Empréstimos</a>
+    </div>
+  </div>
+</nav>
+<main class="container">
+  <div th:if="${mensagem}" class="notice notice-success" th:text="${mensagem}"></div>
+  <div th:if="${erro}" class="notice notice-error" th:text="${erro}"></div>
+
+  <header class="page-header"><div><h1>Usuários</h1><p class="subtitle">Gerencie as pessoas cadastradas para utilizar a biblioteca</p></div><a th:href="@{/usuarios/novo}" class="btn btn-primary">+ Novo Usuário</a></header>
+  <section class="stats-grid"><div class="stat-card"><span class="stat-label">Total de Usuários</span><strong class="stat-value" th:text="${#lists.size(usuarios)}">0</strong></div></section>
+  <div class="card"><table>
+    <thead><tr><th>ID</th><th>Nome</th><th>E-mail</th><th>Matrícula</th><th class="text-right">Ações</th></tr></thead>
+    <tbody>
+    <tr th:if="${#lists.isEmpty(usuarios)}"><td colspan="5" class="empty-state">Nenhum usuário cadastrado.</td></tr>
+    <tr th:each="usuario : ${usuarios}">
+      <td class="id-col" th:text="|#${usuario.id}|">#1</td><td class="fw-600" th:text="${usuario.nome}">Nome</td><td th:text="${usuario.email}">email@exemplo.com</td><td th:text="${usuario.matricula}">0001</td>
+      <td><div class="actions"><a th:href="@{/usuarios/editar/{id}(id=${usuario.id})}" class="btn btn-sm btn-edit">Editar</a><form th:action="@{/usuarios/excluir/{id}(id=${usuario.id})}" method="post" onsubmit="return confirm('Deseja excluir este usuário?');"><button class="btn btn-sm btn-delete" type="submit">Excluir</button></form></div></td>
+    </tr>
+    </tbody>
+  </table></div>
+
+</main>
+</body>
+</html>

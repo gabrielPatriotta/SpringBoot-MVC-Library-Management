@@ -8,6 +8,12 @@ import java.util.List;
 
 @Repository
 public interface LivroRepository extends JpaRepository<Livro, Long> {
+
     List<Livro> findByDisponivelTrue();
+
     List<Livro> findByTituloContainingIgnoreCase(String titulo);
+
+    boolean existsByAutor_Id(Long autorId);
+
+    boolean existsByCategoria_Id(Long categoriaId);
 }
